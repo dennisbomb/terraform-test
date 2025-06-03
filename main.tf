@@ -23,4 +23,4 @@ variable "datadog_site" {
   type        = string
   default     = "datadoghq.com"
 }
-
+# Test GitHub Actions trigger
