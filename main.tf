@@ -20,8 +20,12 @@ resource "datadog_monitor" "cpu_high" {
   message            = "🚨 CPU usage is too high on {{host.name}}"
   escalation_message = "⚠️ Please investigate high CPU on {{host.name}}"
 
-  threshold_critical = 90
-  notify_no_data     = true
-  no_data_timeframe  = 10
-  tags               = ["env:test", "team:ops"]
+  notify_no_data    = true
+  no_data_timeframe = 10
+
+  thresholds = {
+    critical = 90
+  }
+
+  tags = ["env:test", "team:ops"]
 }
