@@ -13,37 +13,17 @@ provider "datadog" {
   api_url = var.datadog_site
 }
 
-resource "datadog_dashboard" "example" {
-  title        = "My Terraform Dashboard"
-  description  = "Dashboard created with Terraform"
-  layout_type  = "ordered"
-  is_read_only = false
+resource "datadog_monitor" "cpu_high" {
+  name               = "High CPU Usage"
+  type               = "metric alert"
+  query              = "avg(last_5m):avg:system.cpu.user{*} > 90"
+  message            = "CPU usage is too high on {{host.name}}"
+  escalation_message = "Please investigate high CPU on {{host.name}}."
 
-  widget {
-    layout {
-      x      = 0
-      y      = 0
-      width  = 47
-      height = 15
-    }
-
-    definition {
-      timeseries_definition {
-        title       = "CPU Usage (User)"
-        show_legend = true
-        type        = "line"
-
-        request {
-          q            = "avg:system.cpu.user{*}"
-          display_type = "line"
-          style {
-            palette    = "dog_classic"
-            line_type  = "solid"
-            line_width = "normal"
-          }
-        }
-      }
-    }
+  thresholds {
+    critical = 90
   }
+
+  notify_no_data    = true
+  no_data_timeframe = 10
 }
-#
