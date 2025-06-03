@@ -27,7 +27,7 @@ EOT
   escalation_message = "🚨 {{host.name}} remains over threshold — take action"
 
   monitor_thresholds {
-    critical = 85 # was 90 
+    critical = 90
   }
 
   notify_no_data      = true
