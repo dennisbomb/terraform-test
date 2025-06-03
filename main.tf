@@ -37,6 +37,6 @@ EOT
   include_tags        = true
   tags                = [
     "env:test",
-    "team:ops"
+    "team:Observability and Monitoring Platform"
   ]
 }
