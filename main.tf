@@ -42,35 +42,36 @@ EOT
 }
 
 
-resource "datadog_monitor" "eth39_inbound_snmp" {
-  name = "TLM: NET: High Inbound Traffic on ethernet39 - 60hudson-05-leaf-01"
+resource "datadog_monitor" "eth39_inbound_high_capacity" {
+  name = "TLM: NET: High Inbound Traffic (HC Octets Rate) on ethernet39 - 60hudson-05-leaf-01"
 
   type  = "metric alert"
-query = <<EOT
-avg(last_5m):avg:snmp.ifInOctets{snmp_host:60hudson-05-leaf-01.mskcc.org,interface:ethernet39} by {snmp_host,interface} > 50000000
+
+  query = <<EOT
+avg(last_5m):avg:snmp.ifHCInOctets.rate{interface:ethernet39,snmp_host:60hudson-05-leaf-01.mskcc.org} by {snmp_host,interface} > 900000000
 EOT
 
-
   message = <<EOM
-🚨 High inbound SNMP traffic on ethernet39 ({{interface.name}})  
-Switch: 60hudson-05-leaf-01  
-Threshold: > 50MB over 5 minutes
+🚨 High-rate inbound SNMP traffic detected on ethernet39 ({{interface.name}})  
+Switch: {{snmp_host.name}}  
+Threshold: > 900 Mbps (measured using `ifHCInOctets.rate`) over 5 minutes  
 
 @slack-network-team
 EOM
 
   monitor_thresholds {
-    critical = 50000000
+    critical = 900000000
   }
 
   notify_no_data      = true
   no_data_timeframe   = 10
   require_full_window = true
   include_tags        = true
+
   tags = [
-    "source:snmp",
     "interface:ethernet39",
+    "device_type:switch",
     "location:60hudson",
-    "device_type:switch"
+    "source:snmp"
   ]
 }
