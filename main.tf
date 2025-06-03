@@ -14,9 +14,8 @@ provider "datadog" {
 }
 
 resource "datadog_monitor" "cpu_high" {
-  name = "🚨 TLM - High CPU Usage per Host - PoC"
-  type = "query alert"
-
+  name  = "🚨 TLM - High CPU Usage per Host - PoC"
+  type  = "query alert"
   query = "avg(last_5m):avg:system.cpu.user{*} by {host} > 90"
 
   message = <<EOT
@@ -35,26 +34,25 @@ EOT
   require_full_window = true
   new_group_delay     = 300
   include_tags        = true
-  tags                = [
+
+  tags = [
     "env:test",
     "team:Observability and Monitoring Platform"
   ]
 }
 
-
 resource "datadog_monitor" "eth39_inbound_high_capacity" {
   name = "TLM: NET: High Inbound Traffic (HC Octets Rate) on ethernet39 - 60hudson-05-leaf-01"
-
-  type  = "metric alert"
+  type = "metric alert"
 
   query = <<EOT
 avg(last_5m):avg:snmp.ifHCInOctets.rate{interface:ethernet39,snmp_host:60hudson-05-leaf-01.mskcc.org} by {snmp_host,interface} > 900000000
 EOT
 
   message = <<EOM
-🚨 High-rate inbound SNMP traffic detected on ethernet39 ({{interface.name}})  
-Switch: {{snmp_host.name}}  
-Threshold: > 900 Mbps (measured using `ifHCInOctets.rate`) over 5 minutes  
+🚨 High-rate inbound SNMP traffic detected on ethernet39 ({{interface.name}})
+Switch: {{snmp_host.name}}
+Threshold: > 900 Mbps (measured using `ifHCInOctets.rate`) over 5 minutes
 
 @slack-network-team
 EOM
@@ -75,4 +73,3 @@ EOM
     "source:snmp"
   ]
 }
- 
