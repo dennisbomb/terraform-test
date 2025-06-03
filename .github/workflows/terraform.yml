@@ -12,13 +12,13 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-      DATADOG_APP_KEY: ${{ secrets.DATADOG_APP_KEY }}
-      DATADOG_SITE: ${{ secrets.DATADOG_SITE }}
+      TF_VAR_datadog_api_key: ${{ secrets.DATADOG_API_KEY }}
+      TF_VAR_datadog_app_key: ${{ secrets.DATADOG_APP_KEY }}
+      TF_VAR_datadog_site: ${{ secrets.DATADOG_SITE }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
@@ -26,15 +26,17 @@ jobs:
           terraform_version: 1.6.6
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -input=false -no-color
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive -no-color
 
       - name: Terraform Validate
-        run: terraform validate
+        run: terraform validate -no-color
 
       - name: Terraform Plan
-        run: terraform plan -parallelism=5 -out=tfplan
+        run: terraform plan -input=false -no-color -out=tfplan
 
-      # Optional: Automatically apply only on push to main
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve tfplan
+        run: terraform apply -input=false -no-color -auto-approve tfplan
