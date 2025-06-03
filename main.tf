@@ -1,4 +1,4 @@
- terraform {
+terraform {
   required_providers {
     datadog = {
       source  = "DataDog/datadog"
@@ -15,37 +15,34 @@ provider "datadog" {
 
 resource "datadog_dashboard" "example" {
   title        = "My Terraform Dashboard"
-  description  = "Created via GitHub Actions + Terraform"
+  description  = "Dashboard created with Terraform"
   layout_type  = "ordered"
   is_read_only = false
-  notify_list  = []
 
   widget {
-    definition {
-      timeseries_definition {
-        title = "System CPU (User)"
-        show_legend = true
-        legend_size = "0"
-        time = {}
-        type = "line"
-        requests {
-          q = "avg:system.cpu.user{*}"
-          display_type = "line"
-          style {
-            palette = "dog_classic"
-            line_type = "solid"
-            line_width = "normal"
-          }
-        }
-      }
-    }
-
     layout {
       x      = 0
       y      = 0
       width  = 47
       height = 15
     }
+
+    definition {
+      timeseries_definition {
+        title       = "CPU Usage (User)"
+        show_legend = true
+        type        = "line"
+
+        request {
+          q            = "avg:system.cpu.user{*}"
+          display_type = "line"
+          style {
+            palette    = "dog_classic"
+            line_type  = "solid"
+            line_width = "normal"
+          }
+        }
+      }
+    }
   }
 }
-#ssss
