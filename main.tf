@@ -14,7 +14,7 @@ provider "datadog" {
 }
 
 resource "datadog_monitor" "cpu_high" {
-  name = "🚨 High CPU Usage per Host"
+  name = "🚨 TLM - High CPU Usage per Host - PoC"
   type = "query alert"
 
   query = "avg(last_5m):avg:system.cpu.user{*} by {host} > 90"
