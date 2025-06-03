@@ -17,27 +17,27 @@ resource "datadog_monitor" "cpu_high" {
   name = "🚨 High CPU Usage per Host"
   type = "query alert"
 
-  query = "avg(last_5m):avg:system.cpu.user{*} by {host} > 70"
+  # No comparison in the query – thresholds handle it
+  query = "avg(last_5m):avg:system.cpu.user{*} by {host}"
 
   message = <<EOT
-⚠️ Warning if CPU usage > 70%
-🔥 Critical if CPU usage > 90%
+⚠️ CPU usage warning at 70%, critical at 90%
 Host: {{host.name}}
 
 @slack-yourchannel
 EOT
 
-  escalation_message = "🚨 {{host.name}} still critical — immediate action required!"
+  escalation_message = "🚨 {{host.name}} is still over 90% CPU – action required!"
 
   monitor_thresholds {
     warning  = 70
     critical = 90
   }
 
-  notify_no_data     = true
-  no_data_timeframe  = 10
+  notify_no_data      = true
+  no_data_timeframe   = 10
   require_full_window = true
-  new_host_delay      = 300
+  new_group_delay     = 300  # replaces deprecated new_host_delay
   include_tags        = true
   tags                = [
     "env:test",
