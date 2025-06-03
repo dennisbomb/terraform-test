@@ -28,3 +28,4 @@ resource "datadog_monitor" "cpu_high" {
   no_data_timeframe = 10
   tags              = ["env:test", "team:ops"]
 }
+
