@@ -41,28 +41,25 @@ EOT
   ]
 }
 
-resource "datadog_monitor" "switch_eth39_traffic" {
-  name = "TLM: NET: High Traffic on eth39 (Inbound/Outbound) - 60hudson-05-leaf-01"
+
+resource "datadog_monitor" "eth39_inbound_snmp" {
+  name = "TLM: NET: High Inbound Traffic on ethernet39 - 60hudson-05-leaf-01"
 
   type  = "metric alert"
   query = <<EOT
-avg(last_5m):(
-  avg:network.interface.in.bytes{host:60hudson-05-leaf-01.mskcc.org,interface:eth39} +
-  avg:network.interface.out.bytes{host:60hudson-05-leaf-01.mskcc.org,interface:eth39}
-) > 200000000
+avg(last_5m):avg:snmp.ifInOctets{snmp_host:60hudson-05-leaf-01.mskcc.org,interface:ethernet39} > 50000000
 EOT
 
   message = <<EOM
-🚨 High combined traffic on eth39 (in+out) on {{host.name}}  
-Threshold: > 200 MB over 5 minutes
+🚨 High inbound SNMP traffic on ethernet39 ({{interface.name}})  
+Switch: 60hudson-05-leaf-01  
+Threshold: > 50MB over 5 minutes
 
 @slack-network-team
 EOM
 
-  escalation_message = "eth39 inbound + outbound traffic exceeds safe limit. Please investigate switch: 60hudson-05-leaf-01."
-
   monitor_thresholds {
-    critical = 200000000
+    critical = 50000000
   }
 
   notify_no_data      = true
@@ -70,10 +67,9 @@ EOM
   require_full_window = true
   include_tags        = true
   tags = [
-    "device:switch",
-    "interface:eth39",
+    "source:snmp",
+    "interface:ethernet39",
     "location:60hudson",
-    "direction:inout"
+    "device_type:switch"
   ]
 }
-
