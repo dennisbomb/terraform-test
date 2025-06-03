@@ -46,9 +46,10 @@ resource "datadog_monitor" "eth39_inbound_snmp" {
   name = "TLM: NET: High Inbound Traffic on ethernet39 - 60hudson-05-leaf-01"
 
   type  = "metric alert"
-  query = <<EOT
-avg(last_5m):avg:snmp.ifInOctets{snmp_host:60hudson-05-leaf-01.mskcc.org,interface:ethernet39} > 50000000
+query = <<EOT
+avg(last_5m):avg:snmp.ifInOctets{snmp_host:60hudson-05-leaf-01.mskcc.org,interface:ethernet39} by {snmp_host,interface} > 50000000
 EOT
+
 
   message = <<EOM
 🚨 High inbound SNMP traffic on ethernet39 ({{interface.name}})  
