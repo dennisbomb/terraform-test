@@ -7,26 +7,23 @@ on:
   pull_request:
 
 jobs:
-  terraform:
-    name: Terraform
+  Terraform:
     runs-on: ubuntu-latest
-
-    env:
-      TF_VAR_datadog_api_key: ${{ secrets.DATADOG_API_KEY }}
-      TF_VAR_datadog_app_key: ${{ secrets.DATADOG_APP_KEY }}
-      TF_VAR_datadog_site: ${{ secrets.DATADOG_SITE }}
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.6.6
+          terraform_version: 1.6.6  # Or your preferred version
 
       - name: Terraform Init
-        run: terraform init -input=false -no-color
+        run: terraform init
 
       - name: Terraform Format Check
         run: terraform fmt -check -recursive -no-color
@@ -35,8 +32,16 @@ jobs:
         run: terraform validate -no-color
 
       - name: Terraform Plan
-        run: terraform plan -input=false -no-color -out=tfplan
+        run: terraform plan -no-color
+        env:
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+          DATADOG_APP_KEY: ${{ secrets.DATADOG_APP_KEY }}
+          DATADOG_SITE: ${{ secrets.DATADOG_SITE }}
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -input=false -no-color -auto-approve tfplan
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve
+        env:
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+          DATADOG_APP_KEY: ${{ secrets.DATADOG_APP_KEY }}
+          DATADOG_SITE: ${{ secrets.DATADOG_SITE }}
