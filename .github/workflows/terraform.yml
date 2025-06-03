@@ -24,11 +24,6 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-      - name: Import existing monitors
-        run: |
-          terraform import datadog_monitor.cpu_high 174027331 || echo "Already imported: cpu_high"
-          terraform import datadog_monitor.eth39_inbound_high_capacity 174027330 || echo "Already imported: eth39_inbound_high_capacity"
-
       - name: Terraform Plan
         run: terraform plan
 
