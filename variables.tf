@@ -10,6 +10,5 @@ variable "datadog_app_key" {
 
 variable "datadog_site" {
   type    = string
-  default = "datadoghq.com"
+  default = "https://api.datadoghq.com"
 }
-
