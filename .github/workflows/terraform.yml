@@ -4,15 +4,13 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
-
-    env:
-      TF_VAR_datadog_api_key: ${{ secrets.DATADOG_API_KEY }}
-      TF_VAR_datadog_app_key: ${{ secrets.DATADOG_APP_KEY }}
-      TF_VAR_datadog_site: ${{ secrets.DATADOG_SITE }}
 
     steps:
       - name: Checkout code
@@ -26,9 +24,15 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      - name: Import existing monitors
+        run: |
+          terraform import datadog_monitor.cpu_high 174027331 || echo "Already imported: cpu_high"
+          terraform import datadog_monitor.eth39_inbound_high_capacity 174027330 || echo "Already imported: eth39_inbound_high_capacity"
+
       - name: Terraform Plan
         run: terraform plan
 
-      - name: Terraform Apply
-        if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve
+      # Uncomment this block if you're ready to apply automatically
+      # - name: Terraform Apply
+      #   if: github.ref == 'refs/heads/main'
+      #   run: terraform apply -auto-approve
