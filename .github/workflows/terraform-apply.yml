@@ -6,6 +6,8 @@ on:
 jobs:
   terraform-apply:
     runs-on: ubuntu-latest
+    environment:
+      name: prod
 
     steps:
       - name: Checkout code
